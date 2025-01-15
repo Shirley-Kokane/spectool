@@ -1,499 +1,291 @@
-
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta name="description"
-        content="SPECTOOL: A Benchmark for Characterizing Errors in Tool-Use LLMs">
-  <meta name="keywords" content="taco, multi-model model, agent, synthetic data">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TACO</title>
 
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    function gtag() {
-      dataLayer.push(arguments);
-    }
+    <title>APIGen Pipeline</title>
 
-    gtag('js', new Date());
+    <meta name="description" content="APIGen">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    gtag('config', 'G-PYVRSFMDRL');
-  </script>
+    <!--FACEBOOK-->
+    <meta property="og:image" content="./img/overview.jpg">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1196">
+    <meta property="og:image:height" content="705">
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://apigen-pipeline.github.io/"/>
+    <meta property="og:title" content="APIGen Pipeline" />
+    <meta property="og:description" content="Project page for APIGen Pipeline." />
+ 
+    <!--TWITTER-->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="APIGen Pipeline" />
+    <meta name="twitter:description" content="Project page for APIGen Pipeline" />
+    <meta name="twitter:image" content="./img/overview.jpg" />
 
-  <link rel="icon" href="./static/images/taco.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css">
+    <link rel="stylesheet" href="css/app.css">
 
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
-
-  <link rel="stylesheet" href="./static/css/bulma.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  <link rel="stylesheet" href="./static/css/index.css">
-  <link rel="stylesheet" href="./static/css/leaderboard.css">
-
-  <!-- <link href="https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator_bulma.min.css" rel="stylesheet">
-  <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.2/dist/js/tabulator.min.js"></script> -->
-  <script type="text/javascript" src="static/js/sort-table.js" defer></script>
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script defer src="./static/js/fontawesome.all.min.js"></script>
-  <script src="./static/js/bulma-carousel.min.js"></script>
-  <script src="./static/js/bulma-slider.min.js"></script>
-  <script src="./static/js/explorer-index.js"></script>
-  <script src="./static/js/question_card.js"></script>
-
-  <script src="./static/js/leaderboard_testmini.js"></script>  
-  <script src="./data/results/output_folders.js" defer></script>
-  <script src="./data/results/model_scores.js" defer></script>
-
-  <script src="./visualizer/data/data_public.js" defer></script>
-</head>
-<body>
-
-<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
-  </div>
-  <div class="navbar-menu">
-    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-      <a class="navbar-item" href="https://keunhong.com">
-      <span class="icon">
-          <i class="fas fa-home"></i>
-      </span>
-      </a>
-
-      <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link">
-          More Research
-        </a>
-        <div class="navbar-dropdown">
-          <a class="navbar-item" href="https://mnms-project.github.io">
-            m&ms
-          </a>
-          <a class="navbar-item" href="https://github.com/RAIVNLab/CREPE">
-            CREPE
-          </a>
-          <a class="navbar-item" href="https://github.com/RAIVNLab/sugar-crepe">
-            SugarCREPE
-          </a>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</nav>
-
-
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered">
-        <div class="column has-text-centered">
-            <h1 class="title is-1 publication-title is-bold">
-              <img src="./static/images/taco.png" style="width:1em;vertical-align: middle" alt="Logo">
-              <span  style="vertical-align: middle">TACO</span>
-            </h1>
-
-            <h1 class="subtitle is-3 publication-title">
-              Learning Multi-modal Action Models </br> with Synthetic Chains-of-Thought-and-Action 
-            </h1>
-             
-          <div class="is-size-5 publication-authors">
-            <span class="author-block">
-              <a href="https://zixianma.github.io">Zixian Ma</a><sup>1</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://jianguoz.github.io">Jianguo Zhang</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://sites.google.com/view/zhiwei-jim">Zhiwei Liu</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://jieyuz2.github.io">Jieyu Zhang</a><sup>1</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://www.juntaotan.com">Juntao Tan</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://azshue.github.io/">Manli Shu</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://www.niebles.net/">Juan Carlos Niebles</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://www.shelbyh.ai/">Shelby Heinecke</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://huan-december.github.io/index.html">Huan Wang</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="http://cmxiong.com/">Caiming Xiong</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://www.ranjaykrishna.com/index.html">Ranjay Krishna</a><sup>1</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://www.linkedin.com/in/silvio-savarese-97b76114/">Silvio Savarese</a><sup>2</sup>
-            </span>
-          </div>
-
-          <div class="is-size-5 publication-authors mt-5">
-            <span class="author-block"><sup>1</sup>University of Washington 
-              <a href="https://www.cs.washington.edu/"><img src="static/images/uw-logo.svg" style="height: 25px;"> </a> 
-            </span>
-            
-            
-           <span class="author-block"> 
-              <sup>2</sup>
-              Salesforce AI Research <a href="https://www.salesforceairesearch.com/"><img src="static/images/salesforce-logo.svg" style="height: 25px;"> </a>
-              
-          </a>
-        </span>
-          </div>
-
-          <div class="column has-text-centered">
-            <div class="publication-links">
-              <span class="link-block">
-                <a href="https://arxiv.org/pdf/2412.05479"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-              <!-- Code Link. -->
-              <span class="link-block">
-                <a href="https://github.com/SalesforceAIResearch/TACO"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
-                  </a>
-              </span>
-              <!-- HF Links. -->
-              <span class="link-block">
-                <a href="https://huggingface.co/collections/Salesforce/taco-models-6764b2ad9ed8cf7fc0946581"
-                  class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                    <p style="font-size:18px">🤗</p>
-                  </span>
-                  <span>Model Weights</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href="https://huggingface.co/collections/Salesforce/cota-datasets-675333e57dd34a4adc5f3ff4"
-                  class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                    <p style="font-size:18px">🤗</p>
-                  </span>
-                  <span>Datasets</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href="https://taco-interactive.streamlit.app/"
-                  class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                    <p style="font-size:18px">💻</p>
-                  </span>
-                  <span>Demo</span>
-                </a>
-              </span>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <!-- <h2 class=" title is-3">How does it work?</h2> -->
-      <video controls="" height="100%" poster="./static/videos/video_thumbnail.png">
-        <source src="./static/videos/taco_video.mp4#t=7.0" fetchpriority="high" type="video/mp4">
-      </video>
-    </div>
-  </div>
-</section>
-
-<section class="section hero is-light">
-  <div class="container">
-    <!-- Abstract. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <p class="subtitle">
-            We present TACO, a family of multi-modal large action models designed to improve performance on such complex, multi-step and multi-modal tasks. 
-            During inference, TACO produces chains-of-thought-and-action (CoTA), executes intermediate steps by invoking external tools such as OCR, 
-            depth estimation and calculator, then integrates both the thoughts and action outputs to produce coherent responses.
-            To train TACO, we create a large dataset of 1M+ synthetic CoTA traces generated with GPT-4o and Python programs. 
-            We then experiment with various data filtering and mixing techniques and obtain a final subset of 293K high-quality CoTA examples.  
-            This dataset enables TACO to learn complex reasoning and action paths, surpassing existing models trained on instruct tuning data with 
-            only direct answers. Our model TACO outperforms the instruction-tuned baseline across 8 benchmarks, achieving a 3.6% 
-            improvement on average, with gains up to 15% in MMVet tasks involving OCR, mathematical reasoning and spatial reasoning. 
-            Training on high-quality CoTA traces sets a new standard for complex multi-modal reasoning, highlighting the need for structured, 
-            multi-step instruction tuning in advancing open-source mutli-modal models' capabilities.
-          </p>
-        </div>
-      </div>
-    </div>
-    <!--/ Abstract. -->
-  </div>
-</section>
-
-<section class="hero">
-  <div class="container">
-    <div class="hero-body">
-      <img src="./static/images/teaser.png">
-      <p class="subtitle">
-        Figure 1. TACO outputs a Chain-of-Thought-and-Action (CoTA) and answers challenging questions based on the thoughts and action outputs, whereas existing multi-modal
-        large language models can only output direct answers and often fail to reach the correct answers.
-      </p>    
-      <!-- <video autoplay muted loop height="100%">
-        <source src="./static/videos/mnms_video_hd.mp4"
-                type="video/mp4">
-      </video> -->
-    </div>
-  </div>
-</section>
-
-<!-- DATASET SECTION -->
-<section class="hero is-light is-small">
-  <div class="hero-body has-text-centered">
-    <!-- <h1 class="title is-1 mathvista"><img src="static/images/mathvista.png" style="width:1.0em;vertical-align: middle" alt="Logo"/>MathVista Dataset</h1> -->
-    <h1 class="title is-1">
-      <span style="vertical-align: middle">Additional Examples</span>
-    </h1>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <div class="columns is-centered m-3">
-      <div class="column is-full has-text-centered content">
-        <!-- <h2 class="title is-3">More Examples</h2> -->
-        <!-- <p>We present additional examples of TACO success and failure below:</p> -->
-          <div id="results-carousel" class="carousel results-carousel" >
-            <div class="box m-5 carousel-box">
-              <div class="content has-text-centered carousel-content">
-                <img src="static/images/additional_examples.png" />
-                <p> Successful examples</p>
-              </div>
-            </div>
-            <div class="box m-5 carousel-box">
-              <div class="content has-text-centered carousel-content">
-                <img src="static/images/additional_examples_2.png" />
-                <p> Successful examples</p>
-              </div>
-            </div>
-            <div class="box m-5 carousel-box">
-              <div class="content has-text-centered carousel-content">
-                <img src="static/images/failure_examples.png"/>
-                <p> Failure examples</p>
-              </div>
-            </div>
-          </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- DATA SECTION -->
- <!-- DATASET SECTION -->
-<section class="hero is-light is-small">
-  <div class="hero-body has-text-centered">
-    <!-- <h1 class="title is-1 mathvista"><img src="static/images/mathvista.png" style="width:1.0em;vertical-align: middle" alt="Logo"/>MathVista Dataset</h1> -->
-    <h1 class="title is-1">
-      <!-- <img src="static/images/mnms_green_single.png" style="width:1em;vertical-align: middle" alt="Logo" /> -->
-      <span style="vertical-align: middle">CoTA Dataset</span>
-    </h1>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <div class="columns is-centered mt-3">
-      <div class="column is-four-fifths has-text-centered content">
-        <!-- <img src="static/videos/data_gen.gif"/> -->
-        <h2 class="title is-3">CoTA Data Generation</h2>
-        <div class="content has-text-justified">
-          <img src="./static/images/data_gen.png" alt="dataset generation method">
-      <p class="subtitle has-text-centered">
-        Figure 2. We illustrate our model-based data generation (top) and programmatic generation (bottom) pipelines.
-      </p>
-      <p class="subtitle has-text-justified">
-        In model-based generation, we take existing image and QA pairs as inputs and prompt GPT-4o to <b>Generate</b> either a chain-of-thought-and-action (CoTA) or chain-of-thought (CoT) 
-        <i>without</i> actions to answer the questions. Then, we <b>Verify</b> that the chains lead to correct 
-        final answers and <b>Parse</b> successfully; if not, we convert them into the direct answer (Direct)
-        format with groundtruth answers. 
-      </p> 
-        <p class="subtitle has-text-justified">
-        In programmatic generation, we first <b>Annotate</b> images with 
-        human labelers or models, and then use the dense annotations to fill in manually written templates and 
-        <b>Generate</b> QA and the corresponding CoTA with Python programs.
-      </p>
-
-      <h2 class="title is-3 has-text-centered mt-6">CoTA Data Distribution</h2>
-         
-          <div class="content">
-            <img src="static/images/cota_cot_dist.png" alt="data distribution"/>
-            <p class="subtitle">
-              Figure 3. We visualize the frequency of data formats (i.e. CoTA-pos/neg, and CoT-pos/neg) in the original
-               GPT-4-generated data and in our final training data (i.e. CoTA, CoT, or Direct) in each dataset 
-               across all data sources. We also highlight the Action-useless (i.e. datasets where % of CoT-pos - CoTA-pos > 
-               10 or % of CoTA-neg - CoTA-pos > 10) vs. Action-useful datasets.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- EXPERIMENTS SECTION -->
-<section class="hero is-light is-small">
-  <div class="hero-body has-text-centered">
-    <h1 class="title is-1">
-      <!-- <img src="static/images/mnms_green_single.png" style="width:1em;vertical-align: middle" alt="Logo" /> -->
-      <span style="vertical-align: middle">Experimental Results</span>
-    </h1>
-  </div>
-</section>
-<section class="section">
-  <div class="container">
-    <div class="columns  is-centered mt-3">
-      <div class="column is-four-fifths content">
-        
-        <!-- <h2 class="title is-3">Overview</h2> -->
-        <div class="content">
-          <p class="subtitle">
-            We perform extensive experiments with 3 open-source
-            multi-modal models and 9 data recipes on 8 benchmarks
-            to study the effectiveness of CoTA data compared to
-            instruction-tuning data with only direct answers, and to in-
-            vestigate whether data filtering and programmatic data can
-            lead to further performance gains. We highlight three main takeaways below:
-          </p>
-        </div>
-      </div>
-    </div>
-
-
-    <div class="columns is-centered mt-3">
-      <div class="column  is-four-fifths content">
-        <!-- <h2 class="title is-3"></h2> -->
-          <div class="content">
-            <!-- <img src="static/images/table1.png" alt="data distribution"/>
-            <p class="subtitle has-text-centered">
-              Table 1. CoTA Inference Before vs. After Fine-tuning
-            </p> -->
-            <!-- <p class="subtitle">
-             While GPT-4o performs well with either a direct answer (Direct) or chain-of-
-              thought-and-action (CoTA) prompt, open-source multi-modal models lag behind and fail to generate CoTA with few-shot prompting.
-            </p> -->
-            <h3 class=""> <b>Takeaway 1: </b>
-              Fine-tuning with CoTA data elicits multi-modal language models' reasoning and action calling abilities and significantly boosts their performance (i.e. CoTA finetuned vs. CoTA in Figure 4); 
-            <img src="static/images/taco_vs_baselines.png" alt="data distribution"/>
-            <p class="subtitle has-text-centered">
-              Figure 4. Model's average accuracy before and after being finetuned with Direct Answers vs. CoTA data  
-            </p>
-                <h3 class=""> <b>Takeaway 2: </b>
-                Compared to the instruction-tuned baseline trained with only direct answers, TACO improves by 1-4% on average across all benchmarks (i.e. CoTA finetuned vs. Direct finetuned in Figure 4).
-               </h3>
-          </div>
-      </div>
-    </div>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.3/clipboard.min.js"></script>
     
-    <div class="columns is-centered mt-3">
-      <div class="column is-four-fifths  content">
-          <div class="content">
-            <img src="static/images/table2.png" alt="results of best cota data recipe"/>
-            <p class="subtitle has-text-centered">
-              Table 1. Models' accuracy on all benchmarks after being finetuned with the best data recipe
-            </p>
-           <img src="static/images/taco_vs_baselines_mmvet.png" alt="data distribution"/>
-            <p class="subtitle has-text-centered">
-              Figure 5. Model's accuracy on MMVet after being finetuned with Direct Answers vs. CoTA data  
-            </p>
-              <h3 class=""> <b>Takeaway 3: </b> Takeaway 2 holds regardless of model backbones and checkpoints (Table 1), with significant gains of up to 20% on MMVet (Figure 5). 
-          </div>
-      </div>
+    <script src="js/app.js"></script>
+    
+    <style>
+        .nav-pills {
+          position: relative;
+          display: inline;
+        }
+        .imtip {
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+    </style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5JBS73F70V"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-5JBS73F70V');
+</script>
+<body>
+    <div class="container" id="main">
+        <div class="row mt-4">
+            <h2 class="col-md-12 text-center">
+                <b><font size="+6">APIGen: Automated Pipeline for Generating Verifiable and Diverse Function-Calling Datasets</font></b></br> 
+            </h2>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <ul class="list-inline">
+                <br>
+                <li><a href="https://zuxin.me/">Zuxin Liu</a></li>
+                <li><a href="https://www.linkedin.com/in/quocthai9120/">Thai Hoang</a></li>
+                <li><a href="https://jianguoz.github.io/">Jianguo Zhang</a></li>
+                <li><a href="https://people.cs.vt.edu/mingzhu/">Ming Zhu</a></li>
+                <li><a href="https://www.linkedin.com/in/tian-lan-770b4b165/">Tian Lan</a></li>
+                <li><a href="https://github.com/Shirley-Kokane/">Shirley Kokane</a></li>
+                <li><a href="https://www.juntaotan.com/">Juntao Tan</a></li> <br>
+                <li><a href="https://weirayao.github.io/">Weiran Yao</a></li>
+                <li><a href="https://sites.google.com/view/zhiwei-jim">Zhiwei Liu</a></li>
+                <li><a href="https://www.linkedin.com/in/yihao-feng-647985269/">Yihao Feng</a></li>
+                <li><a href="https://www.linkedin.com/in/rithesh-r-n/?originalSubdomain=ca">Rithesh Murthy</a></li>
+                <li><a href="https://yangliangwei.github.io/">Liangwei Yang</a></li> <br>
+                <li><a href="https://www.linkedin.com/in/silvio-savarese-97b76114/">Silvio Savarese</a></li>
+                <li><a href="https://www.niebles.net/">Juan Carlos Niebles</a></li>
+                <li><a href="https://huan-december.github.io/">Huan Wang</a></li>
+                <li><a href="https://www.shelbyh.ai/">Shelby Heinecke</a></li>
+                <li><a href="http://cmxiong.com/">Caiming Xiong</a></li>
+
+                <br>
+                <br>
+                    <a href="https://www.salesforceairesearch.com/">
+                        <image src="img/salesforce-research.png" height="40px"> 
+                        Salesforce AI Research &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </a>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row justify-content-md-center">
+            <div class="col-md-2 text-center">
+                <a href="https://arxiv.org/abs/2406.18518">
+                    <img src="img/paper_small.png" height="60px" alt="Paper">
+                    <h4><strong>Paper</strong></h4>
+                </a>
+            </div>
+            <div class="col-md-2 text-center">
+                <a href="https://huggingface.co/datasets/Salesforce/xlam-function-calling-60k">
+                    <img src="img/data.png" height="60px" alt="Data">
+                    <h4><strong>Data</strong></h4>
+                </a>
+            </div>
+            <div class="col-md-2 text-center">
+                <a href="https://huggingface.co/collections/Salesforce/xlam-models-65f00e2a0a63bbcd1c2dade4">
+                    <img src="https://huggingface.co/datasets/huggingface/brand-assets/resolve/main/hf-logo.svg" height="60px" alt="HuggingFace Models">
+                    <h4><strong>Models</strong></h4>
+                </a>
+            </div>
+        </div>
+
+
+        <div class="row justify-content-md-center">
+            <div class="col-md-10 col-lg-8">
+                <h3 class="mt-4 mb-2">Abstract</h3>
+                <p class="text-justify">
+                    The advancement of function-calling agent models requires diverse, reliable, and high-quality datasets. This paper presents APIGen, an automated data generation pipeline designed to produce verifiable high-quality datasets for function-calling applications. We leverage APIGen and collect 3673 executable APIs across 21 different categories to generate diverse function-calling datasets in a scalable and structured manner. Each data in our dataset is verified through three hierarchical stages: format checking, actual function executions, and semantic verification, ensuring its reliability and correctness. We demonstrate that models trained with our curated datasets, even with only 7B parameters, can achieve state-of-the-art performance on the Berkeley Function-Calling Benchmark, outperforming multiple GPT-4 models. Moreover, our 1B model achieves exceptional performance, surpassing GPT-3.5-Turbo and Claude-3 Haiku. We release a dataset containing 60,000 high-quality entries, aiming to advance the field of function-calling agent domains.
+                </p>
+                <p style="text-align:center;">
+                    <image src="img/overview.jpg" width="100%">
+                </p>
+
+                <h3 class="mt-4 mb-2">Framework</h3>
+                <p class="text-justify">
+                    This section introduces the detailed design of APIGen, an <b>Automated Pipeline for Generating verifiable and diverse function-calling datasets</b>. Our framework is designed with three key factors in mind: data quality, data diversity, and collection scalability. We achieve these through the key modules shown in the figure below: the multi-stage data verification process ensures data quality, the seed QA (query-answer) data sampler, API sampler, and various prompt templates ensure diversity, and our structured modular design using a unified format enables the system to scale to diverse API sources, including but not limited to Python functions and representational state transfer (REST) APIs.
+                </p>
+                <h4 class="mt-4 mb-2">Data Generation Overview</h4>
+                <p class="text-justify">
+                    The data generation process using the APIGen framework begins by sampling one or more APIs and example query-answer (QA) pairs from the library, then formatting them into a standardized JSON format (see figure below for examples). A prompt template is selected based on the desired data generation objectives, which steers the LLM in generating relevant query-answer pairs. Each answer in the generated pairs is a function call formatted in JSON.
+                </p>
+                <p style="text-align:center;">
+                    <image src="img/json_format_example.png" width="100%">
+                </p>
+                <p class="text-justify">
+                    The adoption of a standardized JSON format for APIs, function calls, and generator outputs provides several advantages. Firstly, it establishes a structural way to verify whether the generator's output contains all necessary fields. Outputs that fail to comply with these format requirements are discarded. Secondly, the JSON structure enables efficient checking of function calls for correct parsing and validity of arguments. Calls that include arguments not present in the API library or hallucinate non-existent functions are excluded, enhancing the overall quality of the dataset. Another key benefit is the scalability it enables. With this uniform format, APIGen can easily incorporate data from diverse sources (Python functions, REST APIs, etc) by developing format converters that adapt them into these basic JSON elements, without modifying other core components, such as the prompting library, making the framework highly adaptable and extensible.
+                </p>
+                <p class="text-justify">
+                    The generated function calls are subjected to a multi-stage verification process to ensure their correctness and relevance. First, a format checker verifies correct JSON formatting and parseability. Next, the API execution engine processes the calls and sends the results and queries to a semantic checker, another LLM, which assesses alignment between the function calls, execution results, and query objectives. Data points passing all stages are added back to the seed dataset as high-quality examples to enhance future generation diversity.
+                </p>
+
+                <h4 class="mt-4 mb-2">Multi-Stage Data Verification</h4>
+                <p class="text-justify">
+                    Prioritizing quality is crucial, as previous research has shown that small amounts of high-quality fine-tuning data can substantially enhance model performance on domain-specific tasks. This motivates our multi-stage dataset verification process to align large language models effectively.
+                </p>
+                <p class="text-justify">
+                    The key insight driving our framework design is that, unlike synthetic chat data which can be difficult to evaluate, function-calling answers can be directly executed via their corresponding APIs. This enables checking if the output API and parameters' formats are correct, if the generated API calls are executable, and if execution results match the query's intent, etc. Based on this observation, we propose a three-stage verification process:
+                </p>
+                <ul>
+                    <li><b>Stage 1: Format Checker:</b> This stage performs sanity checks to filter out poorly formatted or incomplete data. The LLM output must strictly follow a JSON format with the "query" and "answer" fields. Additionally, the function calls are checked for correct JSON parsing and valid arguments. Generated calls whose arguments or functions are not present in the given APIs are eliminated to reduce hallucination and improve data quality.</li>
+                    <li><b>Stage 2: Execution Checker:</b> Well-formatted function calls from Stage 1 are executed against the appropriate backend. Unsuccessful executions are filtered out, and fine-grained error messages are provided for failures.</li>
+                    <li><b>Stage 3: Semantic Checker:</b> Successful Stage 2 execution results, available functions, and the generated query are formatted and passed to another LLM to assess if the results semantically align with the query's objective. Data points that pass all three verification stages are regarded as high-quality and added back to improve future diverse data generation.</li>
+                </ul>
+
+                <h4 class="mt-4 mb-2">Methods to Improve Dataset Diversity</h4>
+                <p class="text-justify">
+                    Encouraging diversity in training datasets is crucial for developing robust function-calling agents that can handle a wide range of real-world scenarios. In APIGen, we promote data diversity through multiple perspectives, including query style diversity, sampling diversity, and API diversity.
+                </p>
+                <ul>
+                    <li><b>Query Style Diversity:</b> APIGen's dataset is structured into four main categories: simple, multiple, parallel, and parallel multiple, each designed to challenge and enhance the model's capabilities in different usage scenarios. These categories are controlled by corresponding prompts and seed data.</li>
+                    <li><b>Sampling Diversity:</b> APIGen utilizes a sampling system designed to maximize the diversity and relevance of the generated datasets. This includes API Sampler, Example Sampler, and Prompt Sampler.</li>
+                </ul>
+                <p class="text-justify">
+                    In APIGen, the number of examples and APIs sampled for each dataset iteration is randomly chosen from a predefined range. This randomization enhances dataset variability by preventing repetitive patterns and ensuring a broad coverage of scenarios.
+                </p>
+
+                <h4 class="mt-4 mb-2">Dataset API Sources</h4>
+                <p class="text-justify">
+                    To ensure a high-quality and diverse dataset, we focused on collecting real-world APIs that could be readily executed and came with thorough documentation. We primarily sourced APIs from ToolBench, a comprehensive tool-use dataset that includes 16,464 REST APIs across 49 coarse-grained categories from RapidAPI Hub. This hub is a leading marketplace featuring a vast array of developer-contributed APIs.
+                </p>
+                <p class="text-justify">
+                    To further enhance the usability and quality of the APIs, we perform the following filtering and cleaning procedures on the ToolBench dataset:
+                </p>
+                <ul>
+                    <li><b>Data Quality Filtering:</b> We remove APIs with incorrectly parsed documentation and those lacking required or optional parameters. APIs requiring no parameters were excluded to maintain the challenge level appropriate for our dataset needs.</li>
+                    <li><b>API Accessibility Testing:</b> We tested API accessibility by making requests to each endpoint using example parameters provided in the dataset and through the Stable Toolbench server. APIs that could not be executed or returned errors, such as timeouts or invalid endpoints, were discarded.</li>
+                    <li><b>Docstring Regeneration:</b> To improve the quality of API documentation, we regenerated docstrings for the APIs that have noisy and unusable descriptions.</li>
+                </ul>
+                <p style="text-align:center;">
+                    <image src="img/dataset_pie_chart.png" width="40%">
+                </p>
+                <p class="text-justify">
+                    After cleaning, we obtain 3,539 executable REST APIs with good documentation. Additionally, we incorporated Python functions as another API type, inspired by the executable evaluation categories of the Berkeley function-calling benchmark. We collected 134 well-documented Python functions covering diverse fields such as mathematics, finance, and data management. Sample API examples are provided in the supplementary material.
+                </p>
+                <p class="text-justify">
+                    The original ToolBench dataset contained semantically overlapping categories such as <tt>Finance</tt> and <tt>Financial</tt>. We consolidated these into 21 distinct categories to ensure clarity and balance across the dataset. Figure illustrates the distribution of the 3,673 executable APIs across these redefined categories, spanning sectors like technology, social sciences, education, and sports. This diverse collection of APIs provides a strong foundation for synthetic data generation and is a valuable asset for ensuring data quality and reliability.
+                </p>
+
+                <h4 class="mt-4 mb-2">Collection Setup and Dataset Details</h4>
+                <p class="text-justify">
+                    To validate the effectiveness of the APIGen framework, we generated datasets targeting various query styles. We utilized several base LLMs for data generation, including DeepSeek-V2-Chat (236B), DeepSeek-Coder-33B-Inst, Mixtral-8x22B-Inst, and Mixtral-8x7B-Inst. For each model, our target was to generate 40,000 data points by sampling different combinations of APIs, seed data, and prompt templates. To foster diversity in the generated responses, we set the generation temperature to 0.7 across all models. Examples of the prompt templates and APIs used are provided in the supplementary materials for reference.
+                </p>
+                <p class="text-justify">
+                    Table below presents statistics for the data generation process with different models, including the total verified data point count and the number of filtered data points at each verification stage. The filtering process successfully removes many low-quality data points due to formatting issues, execution errors, or failure to pass the semantic check. The first two stages, format checker and execution checker, typically filter out the majority of low-quality data. These data points often have infeasible argument ranges, incorrect types, missing required parameters, or more severe issues such as hallucination of function calls or parameters. Our systematic verification process provides a rigorous way to reduce the occurrence of these situations.
+                </p>
+                <p style="text-align:center;">
+                    <table class="table">
+                        <caption>Filtering statistics for the generated datasets using different base LLMs.</caption>
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Verified Data</th>
+                                <th>Fail Format</th>
+                                <th>Fail Execution</th>
+                                <th>Fail Semantic</th>
+                                <th>Pass Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>DeepSeek-Coder-33B-Inst</td>
+                                <td>13,769</td>
+                                <td>4,311</td>
+                                <td>15,496</td>
+                                <td>6,424</td>
+                                <td>34.42%</td>
+                            </tr>
+                            <tr>
+                                <td>Mixtral-8x7B-Inst</td>
+                                <td>15,385</td>
+                                <td>3,311</td>
+                                <td>12,341</td>
+                                <td>7,963</td>
+                                <td>38.46%</td>
+                            </tr>
+                            <tr>
+                                <td>Mixtral-8x22B-Inst</td>
+                                <td>26,384</td>
+                                <td>1,680</td>
+                                <td>5,073</td>
+                                <td>6,863</td>
+                                <td>65.96%</td>
+                            </tr>
+                            <tr>
+                                <td>DeepSeek-V2-Chat (236B)</td>
+                                <td>33,659</td>
+                                <td>817</td>
+                                <td>3,359</td>
+                                <td>2,165</td>
+                                <td>84.15%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </p>
+                <p class="text-justify">
+                    The semantic checker also plays a crucial role in filtering generated data that does not align with the query's objectives. For instance, if a user's query contains multiple requests, but the returned results only address one, or if the generated function-call data and execution results do not match the user's query, the data point will be filtered out. Including these data points in the training set for model training could potentially harm the performance, as demonstrated in the experiments.
+                </p>
+                <p class="text-justify">
+                    We observe that stronger models like DeepSeek-V2-Chat and Mixtral-8x22B-Inst have better format-following capabilities and higher pass rates, while the two relatively smaller models have a much higher likelihood of producing data that cannot be executed. This suggests that when using weaker models to generate data, a strict verification process is recommended to filter out low-quality data.
+                </p>
+                <p class="text-justify">
+                    We are releasing approximately 60,000 high-quality function-calling datasets generated from the two strongest models: Mixtral-8x22B-Inst and DeepSeek-V2-Chat (236B). These datasets include all the query styles mentioned and cover a wide range of practical situations, with 3,673 diverse APIs across 21 categories. Each data point has been verified using real-world APIs to ensure its validity and usefulness. By making this dataset publicly available, we aim to benefit the research community and facilitate future work in this area.
+                </p>
+
+                <p class="text-justify">
+                    We mainly test our function-calling models on the <a href="https://gorilla.cs.berkeley.edu/leaderboard.html">Berkeley Function-Calling Leaderboard (BFCL)</a>, which offers a comprehensive evaluation framework for assessing LLMs' function-calling capabilities across various programming languages and application domains like Java, JavaScript, and Python.
+                </p>
+                
+                <div align="center">
+                    <img src="https://github.com/apigen-pipeline/apigen-pipeline.github.io/blob/main/img/table-result-0718.png?raw=true" width="620" alt="Performance comparison on Berkeley Function-Calling Leaderboard">
+                    <p>Performance comparison on the BFCL benchmark as of date 07/18/2024. Evaluated with <code>temperature=0.001</code> and <code>top_p=1</code></p>
+                </div>
+                
+                <p class="text-justify">
+                    Our <code>xLAM-7b-fc-r</code> secures the 3rd place with an overall accuracy of 88.24% on the leaderboard, outperforming many strong models. Notably, our <code>xLAM-1b-fc-r</code> model is the only tiny model with less than 2B parameters on the leaderboard, but still achieves a competitive overall accuracy of 78.94%, outperforming GPT3-Turbo and many larger models. Both models exhibit balanced performance across various categories, showing their strong function-calling capabilities despite their small sizes.
+                </p>
+
+            </div>
+        </div>
     </div>
-
-    <!-- <div class="columns is-centered mt-3">
-      <div class="column is-four-fifths  content">
-          <div class="content">
-            <img src="static/images/table3.png" alt="model-generated data ablations"/>
-            <p class="subtitle has-text-centered">
-              Table 3. Model-generated Data Ablations
+    <div class="row justify-content-md-center mt-4">
+        <div class="col-md-10 col-lg-8">
+            <p class="text-justify" style="font-size: 10px;">
+                This page is adapted from the template of <a href="https://video-language-planning.github.io/">Video Language Planning</a> project website. We thank the authors for providing the template.
             </p>
-              <h3 class=""> <b>Takeaway 3: </b>
-                Quality matters more than quantity: the smallest dataset with only
-                CoTA examples results in better average performance and higher gains compared to larger datasets with a mix of CoTA, CoT and/or Direct
-                examples; and filtering out Action-useless datasets also leads to performance gains.
-          </div>
-      </div>
+        </div>
     </div>
-    <div class="columns is-centered mt-3">
-      <div class="column is-four-fifths  content">
-          <div class="content">
-            <img src="static/images/table4.png" alt="model + program data mixtures"/>
-            <p class="subtitle has-text-centered">
-              Table 4. Model-generated + Program-generated CoTA Mixtures
-            </p>
-              <h3 class=""> <b>Takeaway 4: </b>
-                Adding programmatically generated data can lead to further gains on some benchmarks but brings no additional gains to the average performance.
-          </div>
-      </div>
-    </div> -->
-
-  </div>
-</section>
-
-
-<section class="section" id="BibTeX">
-  <div class="container content">
-    <h2 class="title">Citation</h2>
-    <pre><code>@misc{ma2024tacolearningmultimodalaction,
-      title={TACO: Learning Multi-modal Action Models with Synthetic Chains-of-Thought-and-Action}, 
-      author={Zixian Ma and Jianguo Zhang and Zhiwei Liu and Jieyu Zhang and Juntao Tan and Manli Shu and Juan Carlos Niebles and Shelby Heinecke and Huan Wang and Caiming Xiong and Ranjay Krishna and Silvio Savarese},
-      year={2024},
-      eprint={2412.05479},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2412.05479}, 
-}</code></pre>
-  </div>
-</section>
-
-<footer class="footer">
-  <!-- <div class="container"> -->
-  <div class="content has-text-centered">
-  </div>
-  <div class="columns is-centered">
-    <div class="column is-8">
-      <div class="content">
-        <p>
-          This website is website adapted from <a href="https://nerfies.github.io/">Nerfies</a> and <a href="https://mathvista.github.io/">MathVista</a>, licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-            Commons Attribution-ShareAlike 4.0 International License</a>.
-        </p>
-      </div>
-    </div>
-  </div>
-  <!-- </div> -->
-</footer>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>hljs.highlightAll();</script>
 </body>
 </html>
